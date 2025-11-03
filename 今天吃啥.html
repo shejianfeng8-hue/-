@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今天吃啥？- 美食转盘</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .bg-gradient-food {
+                background: linear-gradient(180deg, #ffd7ba 0%, #ffbfa0 100%);
+            }
+            .btn-primary {
+                background-color: #ff7d47;
+                @apply text-white font-medium rounded-lg py-3 px-6 transition-all hover:bg-orange-600 active:scale-95 shadow-md;
+            }
+            .btn-secondary {
+                background-color: #fff;
+                @apply text-orange-700 font-medium rounded-lg py-3 px-6 transition-all hover:bg-orange-50 active:scale-95 shadow-sm;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-food min-h-screen flex flex-col items-center py-8 px-4 font-sans">
+    <!-- 标题区域 -->
+    <header class="text-center mb-8 w-full max-w-2xl">
+        <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-orange-700 mb-2">今天吃啥？</h1>
+        <div id="resultBox" class="bg-white rounded-xl shadow-md p-6 mb-6 text-center">
+            <p id="foodResult" class="text-[clamp(1.2rem,3vw,1.8rem)] font-medium text-gray-800">点一下看看吃什么！</p>
+        </div>
+        <button id="drawBtn" class="btn-primary">
+            开始转盘！
+        </button>
+    </header>
+
+    <!-- 功能按钮区 -->
+    <div class="flex gap-4 mb-6">
+        <a href="content://media/external/file/1000157092" class="btn-secondary">
+            添加食物
+        </a>
+        <a href="content://media/external/file/1000157092" class="btn-secondary">
+            管理列表
+        </a>
+    </div>
+
+    <script>
+        // 初始化食物列表（本地存储优先）
+        const defaultFoods = [
+            "酸辣粉，没胃口吃点酸口的", "牛肉粉", "羊肉粉", "螺蛳粉", "肠粉", "南昌拌粉",
+            "江西炒粉", "蛋炒饭", "日式拉面", "干拌面", "乌龙面/车仔面+鱼丸","寿司/饭团","烤串/烤肉","手抓饼/葱油饼","麻辣烫-天冷吃个热乎的","麻辣香锅-什麽都来点","刚出锅的饺子/馄饨~热腾腾的","煲仔饭，香香的锅巴嘎嘣脆","砂锅土豆粉","冰沙/糖水，喝个冰的甜的","火锅","小炒黄牛肉","干锅肥肠","辣椒炒肉","香干炒肉","水煮肉片","小炒土鸡","番茄土豆肥牛卷","香辣基围虾","剁椒芋头","粉蒸排骨","紫苏牛蛙","捞汁海鲜","香辣鸡爪","孜然排骨","番茄牛肉粒","酸汤金针菇肥牛卷","酸菜鱼","菠萝咕噜肉","锅包肉","韩式石锅拌饭","钵钵鸡","热卤+馒头","窑鸡王","生煎包","先喝一杯甜的，再转一次","好吃的肉包子","猪脚+烧鸭饭","海鲜砂锅粥","黑胡椒牛柳意面","金莎海虾红米肠+灌汤姜汁小笼包+荔湾艇仔粥","椰子鸡","地锅鸡","麦当劳汉堡+炸鸡+薯条+可乐，大大大放纵"
+        ];
+
+        function getFoodList() {
+            const stored = localStorage.getItem('foodList');
+            return stored ? JSON.parse(stored) : defaultFoods;
+        }
+
+        // DOM 元素
+        const foodResult = document.getElementById('foodResult');
+        const drawBtn = document.getElementById('drawBtn');
+        let foodList = getFoodList();
+
+        // 抽奖逻辑
+        function startDraw() {
+            if (foodList.length < 2) {
+                alert('至少需要2种美食才能抽奖哦～ 请先添加食物');
+                return;
+            }
+
+            let isDrawing = true;
+            foodResult.classList.add('text-orange-600', 'font-bold');
+            foodResult.classList.remove('text-gray-800');
+
+            // 快速切换食物名称
+            const drawInterval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * foodList.length);
+                foodResult.textContent = foodList[randomIndex];
+            }, 100);
+
+            // 2秒后停止
+            setTimeout(() => {
+                isDrawing = false;
+                clearInterval(drawInterval);
+                foodResult.classList.remove('text-orange-600', 'font-bold');
+                foodResult.classList.add('text-gray-800');
+            }, 2000);
+        }
+
+        // 事件监听
+        drawBtn.addEventListener('click', startDraw);
+    </script>
+</body>
+</html>
